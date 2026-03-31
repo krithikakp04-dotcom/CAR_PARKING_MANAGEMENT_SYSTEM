@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Car Parking Dashboard</title>
+<style>
+:root { --bg: #0f172a; --panel: #ffffff; --panel-light: #f5f8ff; --text: #13284e; --muted: #55709a; --available: #16a34a; --occupied: #dc2626; --install: #0ea5e9; --border: #d9e2f0; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: radial-gradient(circle at top left, #1f3a70 0%, var(--bg) 65%); color: var(--text); }
+h1 { margin: 30px 0 10px; text-align: center; color: #eef2ff; letter-spacing: 1px; font-size: 2rem; }
+.nav { display: flex; justify-content: center; gap: 16px; margin-bottom: 24px; }
+.nav a { padding: 10px 20px; border-radius: 8px; background: rgba(255,255,255,.16); color: #fff; font-weight: 700; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,.2); transition:.2s; }
+.nav a:hover { background: rgba(255,255,255,.28); }
+.stats { max-width: 1000px; margin: 0 auto 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; font-size: 1rem; }
+.stats span { background: var(--panel-light); color: var(--text); padding: 12px 16px; border-radius: 10px; font-weight: 700; border: 1px solid var(--border); box-shadow: inset 0 0 0 1px rgba(14,58,128,.08); }
+.slot-groups { max-width: 1200px; margin: 0 auto 30px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+.slot-group { background: var(--panel); border-radius: 14px; padding: 18px; border: 1px solid var(--border); box-shadow: 0 10px 20px rgba(0,0,0,.18); }
+.slot-group h3 { margin: 0 0 12px; font-size: 1.2rem; color: #1f3f7e; }
+.subslots { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; }
+.slot-card { border-radius: 10px; padding: 12px 10px; text-align: center; color: #fff; font-weight: 700; min-height: 110px; display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+.slot-card:hover { transform: translateY(-2px); box-shadow: 0 14px 24px rgba(0,0,0,.22); transition: .2s; }
+.available{background:#16a34a;}
+.occupied{background:#dc2626;}
+.slot-card img{width:26px;height:auto;margin-inline:auto;}
+.not-installed{background:#475569;opacity:.85;cursor:default;}
+.install-btn{display:inline-block;margin-top:8px;padding:5px 8px;border-radius:6px;background:var(--install);color:#fff;font-size:12px;text-decoration:none;}
+/* Keep 3 slots per row at all breakpoints for fixed dashboard layout */
+</style>
+</head>
+<body>
+<h1>🚗 Car Parking Dashboard</h1>
+
+<div class="nav">
+    <a href="/book">Book Slot</a>
+    <a href="/tickets">View Tickets</a>
+    <a href="/logout" style="background:rgba(255,255,255,.22);color:#fff;">Logout</a>
+</div>
+
+<!-- Slot Stats -->
+<div class="stats">
+    <span>Total Slots (configured): {{ total_slots }}</span>
+    <span style="color:green;">Available: {{ available }}</span>
+    <span style="color:red;">Occupied: {{ occupied }}</span>
+    <span style="color:#555;">Not installed: {{ not_installed }}</span>
+</div>
+
+<!-- Slots with subslots -->
+<div class="slot-groups">
+    {% for parent, children in slot_groups.items()|sort %}
+        <div class="slot-group">
+            <h3>Slot {{ parent }}</h3>
+            <div class="subslots">
+            {% for item in children %}
+                {% set s = item.db %}
+                {% set active = active_tickets.get(s.slot_id) if active_tickets else None %}
+                {% if s.placeholder %}
+                    <div class="slot-card" style="background:#777; opacity:0.8; cursor:default;">
+                        <img src="https://img.icons8.com/ios-filled/50/ffffff/car.png"/>
+                        <p>{{ item.label }} (not installed)</p>
+                        <p>{{ s.status }}</p>
+                        <a href="/install/{{ item.label }}" style="display:block;margin-top:8px;color:#fff;background:#2196F3;padding:6px 8px;border-radius:4px;text-decoration:none;">Install</a>
+                    </div>
+                {% elif s.status == 'Available' %}
+                    <a href="/book?slot_id={{ s.slot_id }}">
+                        <div class="slot-card available">
+                            <img src="https://img.icons8.com/ios-filled/50/ffffff/car.png"/>
+                            <p>{{ item.label }}</p>
+                            <p>{{ s.status }}</p>
+                        </div>
+                    </a>
+                {% else %}
+                    {% if active %}
+                        <a href="/ticket/{{ active['ticket_id'] }}">
+                    {% else %}
+                        <a href="/tickets?slot_id={{ s.slot_id }}">
+                    {% endif %}
+                        <div class="slot-card occupied">
+                            <img src="https://img.icons8.com/ios-filled/50/ffffff/car.png"/>
+                            <p>{{ item.label }}</p>
+                            <p>{{ s.status }}</p>
+                            {% if active %}
+                                <p style="font-size:12px; font-weight:normal; margin-top:8px;">Ticket #{{ active['ticket_id'] }} – {{ active['vehicle_number'] }}</p>
+                            {% endif %}
+                        </div>
+                    </a>
+                {% endif %}
+            {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+</body>
+</html>

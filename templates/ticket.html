@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Parking Receipt</title>
+<style>
+body{margin:0;font-family:'Segoe UI',Tahoma,Verdana,Arial,sans-serif;background:linear-gradient(135deg,#1f365c,#0b1b34);color:#1b2642;}
+.receipt{max-width:500px;margin:35px auto;padding:24px;background:#fff;border-radius:16px;box-shadow:0 20px 35px rgba(8,25,55,.28);border:1px solid #dce4f5;}
+.header{text-align:center;margin-bottom:18px;}
+.header h2{margin:0;font-size:1.45rem;letter-spacing:2px;color:#0b265f;}
+.header p{margin:3px;font-size:13px;color:#566e95;}
+.line{border-top:1px dashed #e1e8f8;margin:14px 0;}
+.item{display:flex;justify-content:space-between;margin:8px 0;font-size:15px;color:#243e6b;}
+.item span:first-child{font-weight:700;}
+.total{font-size:1.3rem;font-weight:800;text-align:right;color:#1a3e78;margin-top:12px;}
+.actions{margin-top:20px;text-align:center;}
+button,a.action{margin:5px 5px;padding:8px 12px;font-size:14px;border:none;border-radius:7px;cursor:pointer;text-decoration:none;color:#fff;font-weight:700;}
+button.print{background:#0f9d58;}
+a.action{background:#2060b0;}
+button.print:hover{background:#0b7b41;}
+a.action:hover{background:#164c85;}
+@media print{body{background:#fff;} .actions{display:none;} .receipt{border:none;box-shadow:none;}}
+</style>@media print {
+    body { background: white; margin: 0; }
+    .actions { display: none; }
+    .receipt { border: none; box-shadow: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="receipt">
+    <div class="header">
+        <h2>CAR PARKING RECEIPT</h2>
+        <p>Contact: +91 98765 43210</p>
+        <p>Date: {{ ticket[3].strftime('%Y-%m-%d') if ticket[3] else '-' }} | Time: {{ ticket[3].strftime('%H:%M:%S') if ticket[3] else '-' }}</p>
+    </div>
+
+    <div class="item"><span>Ticket ID</span><span>{{ ticket[0] }}</span></div>
+    <div class="item"><span>Slot ID</span><span>{{ ticket[2] }}</span></div>
+    <div class="item"><span>Vehicle No</span><span>{{ ticket[6] }}</span></div>
+    <div class="item"><span>Entry</span><span>{{ ticket[3] }}</span></div>
+    <div class="item"><span>Exit</span><span>{{ ticket[4] if ticket[4] else 'N/A' }}</span></div>
+    <div class="line"></div>
+    <div class="total">Amount: ₹{{ ticket[5] if ticket[5] else '0' }}</div>
+
+    <div class="actions">
+        <button class="print" onclick="window.print()">Print Receipt</button>
+        <a class="action" href="/tickets">All Tickets</a>
+        <a class="action" href="/">Dashboard</a>
+        <a class="action" href="/logout">Logout</a>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Parking Tickets</title>
+<style>
+:root { --bg:#0a1430; --panel:#f5f8ff; --heading:#fff; --text:#1f365b; --muted:#647a9f; --header:#1f427f; --border:#dbe5f4; }
+body{margin:0;font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:linear-gradient(150deg,#1a2d58 0%,#0b1733 70%);color:var(--text);}
+h1{text-align:center;padding:26px 14px 12px;margin:0;color:var(--heading);letter-spacing:1px;font-size:2rem;text-shadow:0 2px 8px rgba(0,0,0,.4);}
+.nav{display:flex;justify-content:center;gap:12px;margin:12px;}
+.nav a{padding:10px 18px;border-radius:8px;background:rgba(255,255,255,.16);color:#fff;text-decoration:none;font-weight:700;transition:.2s;}
+.nav a:hover{background:rgba(255,255,255,.28);}
+.table-container{max-width:1100px;margin:0 auto 26px;background:var(--panel);border-radius:14px;padding:18px;border:1px solid var(--border);box-shadow:0 12px 30px rgba(0,0,0,.2);}
+table{width:100%;border-collapse:collapse;font-size:15px;}
+th,td{padding:12px 10px;text-align:center;border-bottom:1px solid #e4edf8;}
+th{background:var(--header);color:#fff;font-weight:700;font-size:15px;letter-spacing:.4px;}
+tr:nth-child(even){background:#f8fbff;}
+.exit-btn{padding:7px 14px;background:#dc2626;color:#fff;border:none;border-radius:6px;cursor:pointer;}.exit-btn:hover{background:#b91c1c;}
+.action{padding:6px 11px;border-radius:6px;background:#f97316;color:#fff;display:inline-block;text-decoration:none;}.action:hover{background:#ea580c;}
+.summary{margin-bottom:10px;padding:10px;background:#e8f0ff;border:1px solid #9ecbff;border-radius:8px;color:#154c91;font-weight:700;}
+</style>
+</head>
+<body>
+
+<h1>📝 Parking Tickets</h1>
+<div class="nav">
+    <a href="/">← Dashboard</a>
+    <a href="/book">Book Slot</a>
+    <a href="/logout" style="font-weight:700;">Logout</a>
+</div>
+
+<div class="table-container">
+    {% if selected_slot or selected_ticket %}
+        <div style="margin-bottom: 12px; padding: 10px; background: #eaf2ff; border: 1px solid #8bb9ff; border-radius: 6px;">
+            {% if selected_slot %}
+                <strong>Selected Slot:</strong> {{ selected_slot }}
+            {% endif %}
+            {% if selected_ticket %}
+                &nbsp;&nbsp;|&nbsp;&nbsp;<strong>Newly booked ticket:</strong> #{{ selected_ticket[0] }}, Vehicle {{ selected_ticket[6] }}
+            {% endif %}
+        </div>
+    {% endif %}
+<table>
+    <tr>
+        <th>Ticket ID</th>
+        <th>Vehicle No.</th>
+        <th>Slot ID</th>
+        <th>Entry Time</th>
+        <th>Exit Time</th>
+        <th>Amount (₹)</th>
+        <th>Action</th>
+        <th>Get Ticket</th>
+    </tr>
+    {% for t in tickets %}
+    <tr>
+        <td>{{ t[0] }}</td>
+        <td>{{ t[6] }}</td>
+        <td>{{ t[2] }}</td>
+        <td>{{ t[3] }}</td>
+        <td>{{ t[4] if t[4] else '-' }}</td>
+        <td>{{ t[5] if t[5] else '-' }}</td>
+        <td>
+            {% if not t[4] %}
+                <form method="GET" action="/exit/{{ t[0] }}">
+                    <button type="submit" class="exit-btn">Exit</button>
+                </form>
+            {% else %}
+                ✅
+            {% endif %}
+        </td>
+        <td>
+            <a class="action" href="/ticket/{{ t[0] }}" style="background:#ff9800;">View Ticket</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+</div>
+
+</body>
+</html>

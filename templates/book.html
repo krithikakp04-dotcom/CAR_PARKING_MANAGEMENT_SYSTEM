@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Book Parking Slot</title>
+<style>
+:root { --bg:#101e38; --card:#fff; --card2:#f9fbff; --text:#121c2f; --muted:#5e6b84; --success:#2e7d32; --danger:#c62828; --primary:#1565c0; }
+*{box-sizing:border-box;}
+body{font-family:'Segoe UI',Tahoma,Verdana,sans-serif;margin:0;padding:0;background:linear-gradient(120deg,#1e2f5a,#0f1a31);color:var(--text);}
+.container{max-width:520px;margin: 40px auto;padding:20px;}
+h2{margin:0 0 16px;color:#0f2f6b;text-shadow:0 1px 2px rgba(0,0,0,.2);}
+form{background:var(--card);border-radius:14px;padding:24px;box-shadow:0 10px 20px rgba(0,0,0,.18);border:1px solid rgba(21,101,192,.15);}
+label{display:block;margin-top:14px;font-size:15px;font-weight:700;color:var(--muted);}
+input{width:100%;padding:10px 12px;margin-top:6px;font-size:15px;border:1px solid #c7d3eb;border-radius:8px;background:#f8fbff;transition:.2s;border-color:#b0c4e6;}
+input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 2px rgba(21,101,192,.15);}
+button{margin-top:22px;width:100%;padding:12px;font-size:16px;font-weight:700;background:var(--primary);color:#fff;border:none;border-radius:10px;cursor:pointer;box-shadow:0 6px 12px rgba(21,101,192,.3);transition:.2s;}
+button:hover{background:#024fb0;transform:translateY(-1px);}
+.slot-info{margin-top:16px;font-size:16px;font-weight:700;color:#243e77;}
+a{display:block;margin-top:14px;text-align:center;color:#1565c0;font-weight:600;text-decoration:none;}
+a:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+
+<form method="POST">
+<h2>🚗 Book Parking Slot</h2>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="message" style="margin-bottom:13px;color:#c62828;font-weight:700;">
+            {% for category, message in messages %}
+                <span>{{ message }}</span>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+<label>Name:</label>
+<input type="text" name="name" required>
+
+<label>Phone:</label>
+<input type="text" name="phone" required>
+
+<label>Vehicle Number:</label>
+<input type="text" name="vehicle" required>
+
+{% if pre_slot %}
+    <div class="slot-info">Booking for Slot: {{ pre_slot }}</div>
+    <input type="hidden" name="slot_id" value="{{ pre_slot }}">
+{% endif %}
+
+<div class="slot-info">Rate: ₹{{ rate }} per hour</div>
+
+<button type="submit">Book Slot</button>
+<a href="/">← Back to Dashboard</a>
+<a href="/logout" style="margin-top:10px; display:inline-block; color:#1565c0;">Logout</a>
+</form>
+
+</body>
+</html> 

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login | Car Parking</title>
+<style>
+:root { --bg:#0f2a5f; --panel:#fff; --text:#0f2a5f; --accent:#1565c0; --danger:#d32f2f; }
+body{margin:0;font-family:'Segoe UI',Tahoma,Verdana,Arial,sans-serif;background:linear-gradient(120deg,#152e6a,#0f1732 80%);color:#fff;}
+.container{max-width:380px;margin:80px auto;padding:28px;background:var(--panel);border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.32);}
+h2{margin:0 0 14px;color:var(--text);}
+.form-group{margin-bottom:14px;}
+label{display:block;font-weight:700;color:#2a3b6b;margin-bottom:6px;}
+input{width:100%;padding:10px 12px;border:1px solid #bed1ea;border-radius:8px;font-size:15px;}
+button{width:100%;padding:11px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;margin-top:8px;font-size:16px;}
+button:hover{background:#0e4da9;}
+.message{margin-bottom:12px;font-size:14px;color:#b00020;}
+.link{margin-top:10px;text-align:center;font-size:14px;}
+.link a{color:#1565c0;text-decoration:none;font-weight:600;} 
+</style>
+</head>
+<body>
+<div class="container">
+    <h2>Car Parking Management System</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="message">
+                {% for category, message in messages %}
+                    <span>{{ message }}</span>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    <form method="POST" action="{{ url_for('login') }}">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" required>
+        </div>
+        <button type="submit">Log In</button>
+    </form>
+    <div class="link" style="color:#54668f;">Login with admin credentials to access the dashboard.</div>
+</div>
+</body>
+</html>
