@@ -36,10 +36,10 @@ a:hover{text-decoration:underline;}
 {% endwith %}
 
 <label>Name:</label>
-<input type="text" name="name" required>
+<input type="text" name="name" required pattern="[A-Za-z ]+" title="Only letters and spaces are allowed">
 
 <label>Phone:</label>
-<input type="text" name="phone" required>
+<input type="text" name="phone" required pattern="\d{10}" title="Enter exactly 10 digits">
 
 <label>Vehicle Number:</label>
 <input type="text" name="vehicle" required>

@@ -176,6 +176,13 @@ def book():
         phone = request.form['phone'].strip()
         vehicle = request.form['vehicle'].strip()
 
+        # Validate customer name: letters and spaces only
+        if not name or not name.replace(' ', '').isalpha():
+            flash('Name must contain only alphabetic characters and spaces', 'error')
+            cursor.close()
+            db.close()
+            return render_template('book.html', rate=RATE_PER_HOUR, pre_slot=slot_id)
+
         # Validate phone number is numeric and 10 digits long
         if not phone.isdigit() or len(phone) != 10:
             flash('Phone number must contain exactly 10 digits (0-9)', 'error')
