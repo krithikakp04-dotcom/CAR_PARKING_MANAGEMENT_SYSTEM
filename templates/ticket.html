@@ -37,7 +37,8 @@ a.action:hover{background:#164c85;}
     </div>
 
     <div class="item"><span>Ticket ID</span><span>{{ ticket[0] }}</span></div>
-    <div class="item"><span>Slot ID</span><span>{{ ticket[2] }}</span></div>
+    <div class="item"><span>Slot ID</span><span>{{ ticket[2] if ticket[2] else '-' }}</span></div>
+    <div class="item"><span>Slot Label</span><span>{{ slot_label if slot_label else '-' }}</span></div>
     <div class="item"><span>Vehicle No</span><span>{{ ticket[6] }}</span></div>
     <div class="item"><span>Entry</span><span>{{ ticket[3] }}</span></div>
     <div class="item"><span>Exit</span><span>{{ ticket[4] if ticket[4] else 'N/A' }}</span></div>

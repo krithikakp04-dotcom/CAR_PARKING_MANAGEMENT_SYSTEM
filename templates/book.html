@@ -44,9 +44,9 @@ a:hover{text-decoration:underline;}
 <label>Vehicle Number:</label>
 <input type="text" name="vehicle" required>
 
-{% if pre_slot %}
-    <div class="slot-info">Booking for Slot: {{ pre_slot }}</div>
-    <input type="hidden" name="slot_id" value="{{ pre_slot }}">
+{% if slot_id %}
+    <div class="slot-info">Booking for Slot: {{ pre_slot if pre_slot else slot_id }}</div>
+    <input type="hidden" name="slot_id" value="{{ slot_id }}">
 {% endif %}
 
 <div class="slot-info">Rate: ₹{{ rate }} per hour</div>

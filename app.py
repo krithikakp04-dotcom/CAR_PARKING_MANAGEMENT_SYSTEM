@@ -17,6 +17,32 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+# helper: A1..E5 <-> 1..25 conversions
+
+def slot_label_from_id(slot_id):
+    try:
+        slot_id = int(slot_id)
+    except (TypeError, ValueError):
+        return None
+    if not (1 <= slot_id <= 25):
+        return None
+    letters = ['A', 'B', 'C', 'D', 'E']
+    parent = letters[(slot_id - 1) // 5]
+    sub = ((slot_id - 1) % 5) + 1
+    return f"{parent}{sub}"
+
+
+def slot_id_from_input(value):
+    if value is None:
+        return None
+    value = str(value).strip()
+    if value.isdigit():
+        return int(value)
+    if len(value) == 2 and value[0] in 'ABCDE' and value[1] in '12345':
+        letters = ['A', 'B', 'C', 'D', 'E']
+        return (letters.index(value[0])) * 5 + int(value[1])
+    return None
+
 # -------------------
 # Login
 # -------------------
@@ -141,7 +167,9 @@ def book():
     db = get_connection()
     cursor = db.cursor()
 
-    slot_id = request.args.get('slot_id')  # Get clicked slot from dashboard
+    raw_slot = request.args.get('slot_id')  # Get clicked slot from dashboard
+    slot_id = slot_id_from_input(raw_slot)
+    pre_slot_label = slot_label_from_id(slot_id)
 
     if request.method == 'POST':
         name = request.form['name'].strip()
@@ -155,9 +183,16 @@ def book():
             db.close()
             return render_template('book.html', rate=RATE_PER_HOUR, pre_slot=slot_id)
 
-        # Use pre-selected slot or first available
+        # Use pre-selected slot (existing or from form) or first available
         if 'slot_id' in request.form and request.form['slot_id']:
-            slot_id = request.form['slot_id']
+            selected_slot = request.form['slot_id']
+            slot_id = slot_id_from_input(selected_slot)
+            pre_slot_label = slot_label_from_id(slot_id)
+            if slot_id is None:
+                cursor.close()
+                db.close()
+                return "<h2>Invalid slot selected!</h2><a href='/'>Back to Dashboard</a>"
+
             cursor.execute("SELECT status FROM Parking_Slots WHERE slot_id=%s", (slot_id,))
             status = cursor.fetchone()
             if not status or status[0] != 'Available':
@@ -172,6 +207,7 @@ def book():
                 db.close()
                 return "<h2>Parking Full!</h2><a href='/'>Back to Dashboard</a>"
             slot_id = slot[0]
+            pre_slot_label = slot_label_from_id(slot_id)
 
         # Insert Customer
         cursor.execute("INSERT INTO Customers (name, phone) VALUES (%s, %s)", (name, phone))
@@ -200,7 +236,7 @@ def book():
 
     cursor.close()
     db.close()
-    return render_template("book.html", rate=RATE_PER_HOUR, pre_slot=slot_id)
+    return render_template("book.html", rate=RATE_PER_HOUR, pre_slot=pre_slot_label, slot_id=slot_id)
 
 # -------------------
 # Tickets Page
@@ -257,7 +293,8 @@ def ticket(ticket_id):
     if not ticket_data:
         return "<h2>Ticket not found.</h2><a href='/tickets'>View all tickets</a>"
 
-    return render_template("ticket.html", ticket=ticket_data)
+    slot_label = slot_label_from_id(ticket_data[2])
+    return render_template("ticket.html", ticket=ticket_data, slot_label=slot_label)
 
 # -------------------
 # Exit Vehicle
